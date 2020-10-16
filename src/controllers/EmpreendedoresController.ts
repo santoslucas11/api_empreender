@@ -4,6 +4,16 @@ import Empreendedores from '../models/Empreendedor';
 
 
 export default{
+
+    async index(request: Request, response: Response) {
+        const empreendedoresRepository = getRepository(Empreendedores);
+
+        const empreendedores = await empreendedoresRepository.find();
+
+        return response.json(empreendedores);
+    },
+
+
     async create(request: Request, response: Response) {
         const {
             name,
