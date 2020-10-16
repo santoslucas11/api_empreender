@@ -13,6 +13,16 @@ export default{
         return response.json(empreendedores);
     },
 
+    async show(request: Request, response: Response) {
+        const { id } = request.params;
+
+        const empreendedoresRepository = getRepository(Empreendedores);
+
+        const empreendedores = await empreendedoresRepository.findOneOrFail(id);
+
+        return response.json(empreendedores);
+    },
+
 
     async create(request: Request, response: Response) {
         const {
