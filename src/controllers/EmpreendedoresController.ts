@@ -18,9 +18,9 @@ export default{
 
         const empreendedoresRepository = getRepository(Empreendedores);
 
-        const empreendedores = await empreendedoresRepository.findOneOrFail(id);
+        const empreendedor = await empreendedoresRepository.findOneOrFail(id);
 
-        return response.json(empreendedores);
+        return response.json(empreendedor);
     },
 
 
