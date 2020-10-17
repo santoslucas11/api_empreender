@@ -1,4 +1,5 @@
 import Empreendedor from '../models/Empreendedor';
+import imagesView   from './images_view';
 
 export default{
     render(empreendedor: Empreendedor){
@@ -11,6 +12,7 @@ export default{
             instructions: empreendedor.instructions,
             opening_hours: empreendedor.opening_hours,
             open_on_weekends: empreendedor.open_on_weekends,
+            images: imagesView.renderMany(empreendedor.images)
         };
     },
 
