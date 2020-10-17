@@ -25,7 +25,7 @@ export default{
 
 
     async create(request: Request, response: Response) {
-        const {
+         const {
             name,
             latitude,
             longitude,
@@ -37,6 +37,11 @@ export default{
     
         const empreendedoresRepository = getRepository(Empreendedores);
         
+        const requestImages =request.files as Express.Multer.File[];
+        const images = requestImages.map(image => {
+            return{ path: image.filename }
+        })
+
         const empreendedor = empreendedoresRepository.create({
             name,
             latitude,
@@ -45,6 +50,7 @@ export default{
             instructions,
             opening_hours,
             open_on_weekends,
+            images
         });
     
         await empreendedoresRepository.save(empreendedor);
