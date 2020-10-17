@@ -8,7 +8,9 @@ export default{
     async index(request: Request, response: Response) {
         const empreendedoresRepository = getRepository(Empreendedores);
 
-        const empreendedores = await empreendedoresRepository.find();
+        const empreendedores = await empreendedoresRepository.find({
+            relations: ['images']
+        });
 
         return response.json(empreendedores);
     },
@@ -18,7 +20,9 @@ export default{
 
         const empreendedoresRepository = getRepository(Empreendedores);
 
-        const empreendedor = await empreendedoresRepository.findOneOrFail(id);
+        const empreendedor = await empreendedoresRepository.findOneOrFail(id, {
+            relations: ['images']
+        });
 
         return response.json(empreendedor);
     },
