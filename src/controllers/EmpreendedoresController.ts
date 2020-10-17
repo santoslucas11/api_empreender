@@ -1,88 +1,85 @@
-import {Request, Response} from 'express';
-import { getRepository } from 'typeorm';
-import empreendedorView from '../views/empreendedor_view';
-import * as Yup from 'yup' ;
+import { Request, Response } from "express";
+import { getRepository } from "typeorm";
+import empreendedorView from "../views/empreendedor_view";
+import * as Yup from "yup";
 
-import Empreendedores from '../models/Empreendedor';
+import Empreendedores from "../models/Empreendedor";
 
+export default {
+  async index(request: Request, response: Response) {
+    const empreendedoresRepository = getRepository(Empreendedores);
 
-export default{
+    const empreendedores = await empreendedoresRepository.find({
+      relations: ["images"],
+    });
 
-    async index(request: Request, response: Response) {
-        const empreendedoresRepository = getRepository(Empreendedores);
+    return response.json(empreendedorView.renderMany(empreendedores));
+  },
 
-        const empreendedores = await empreendedoresRepository.find({
-            relations: ['images']
-        });
+  async show(request: Request, response: Response) {
+    const { id } = request.params;
 
-        return response.json(empreendedorView.renderMany(empreendedores));
-    },
+    const empreendedoresRepository = getRepository(Empreendedores);
 
-    async show(request: Request, response: Response) {
-        const { id } = request.params;
+    const empreendedor = await empreendedoresRepository.findOneOrFail(id, {
+      relations: ["images"],
+    });
 
-        const empreendedoresRepository = getRepository(Empreendedores);
+    return response.json(empreendedorView.render(empreendedor));
+  },
 
-        const empreendedor = await empreendedoresRepository.findOneOrFail(id, {
-            relations: ['images']
-        });
+  async create(request: Request, response: Response) {
+    const {
+      name,
+      latitude,
+      longitude,
+      about,
+      instructions,
+      opening_hours,
+      open_on_weekends,
+    } = request.body;
 
-        return response.json(empreendedorView.render(empreendedor));
-    },
+    const empreendedoresRepository = getRepository(Empreendedores);
 
+    const requestImages = request.files as Express.Multer.File[];
+    const images = requestImages.map((image) => {
+      return { path: image.filename };
+    });
 
-    async create(request: Request, response: Response) {
-         const {
-            name,
-            latitude,
-            longitude,
-            about,
-            instructions,
-            opening_hours,
-            open_on_weekends,
-        } = request.body;
-    
-        const empreendedoresRepository = getRepository(Empreendedores);
-        
-        const requestImages =request.files as Express.Multer.File[];
-        const images = requestImages.map(image => {
-            return{ path: image.filename }
+    const data = {
+      name,
+      latitude,
+      longitude,
+      about,
+      instructions,
+      opening_hours,
+      open_on_weekends,
+      images,
+    };
+
+    const schema = Yup.object().shape({
+      nome: Yup.string().required(),
+      latitude: Yup.number().required(),
+      longitude: Yup.number().required(),
+      about: Yup.string().required().max(300),
+      instructions: Yup.string().required(),
+      opening_hours: Yup.string().required(),
+      open_on_weekends: Yup.boolean().required(),
+      images: Yup.array(
+        Yup.object().shape({
+          path: Yup.string().required(),
         })
+      ),
+    });
 
-        const data = {
-            name,
-            latitude,
-            longitude,
-            about,
-            instructions,
-            opening_hours,
-            open_on_weekends,
-            images
-        }
+    await schema.validate(data, {
+      abortEarly: false,
+    });
 
-        const schema = Yup.object().shape({
-            nome: Yup.string().required(),
-            latitude: Yup.number().required(),
-            longitude: Yup.number().required(),
-            about: Yup.string().required().max(300),
-            instructions: Yup.string().required(),
-            opening_hours: Yup.string().required(),
-            open_on_weekends: Yup.boolean().required(),
-            images: Yup.array(
-                Yup.object().shape({
-                    path: Yup.string().required()
-                })
-            )
-        });
+    const empreendedor = empreendedoresRepository.create(data);
 
-        await schema.validate(data, {
-            abortEarly: false,
-        });
+    await empreendedoresRepository.save(empreendedor);
 
-        const empreendedor = empreendedoresRepository.create(data);
-    
-        await empreendedoresRepository.save(empreendedor);
-
-        return response.status(201).json(empreendedor);
-    }    
+    return response.status(201).json(empreendedor);
+  },
 };
