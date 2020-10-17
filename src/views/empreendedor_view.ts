@@ -5,7 +5,7 @@ export default{
     render(empreendedor: Empreendedor){
         return{
             id: empreendedor.id,
-            name: empreendedor.name,
+            nome: empreendedor.name,
             latitude: empreendedor.latitude,
             longitude: empreendedor.longitude,
             about: empreendedor.about,
