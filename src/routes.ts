@@ -9,10 +9,6 @@ const upload = multer(uploadConfig);
 
 routes.get("/empreendedores", EmpreendedoresController.index);
 routes.get("/empreendedores/:id", EmpreendedoresController.show);
-routes.post(
-  "/empreendedores",
-  upload.array("images"),
-  EmpreendedoresController.create
-);
+routes.post("/empreendedores", upload.array("images"), EmpreendedoresController.create);
 
 export default routes;
