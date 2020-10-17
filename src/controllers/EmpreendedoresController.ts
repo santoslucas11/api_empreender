@@ -1,5 +1,7 @@
 import {Request, Response} from 'express';
 import { getRepository } from 'typeorm';
+import empreendedorView from '../views/empreendedor_view';
+
 import Empreendedores from '../models/Empreendedor';
 
 
@@ -12,7 +14,7 @@ export default{
             relations: ['images']
         });
 
-        return response.json(empreendedores);
+        return response.json(empreendedorView.renderMany(empreendedores));
     },
 
     async show(request: Request, response: Response) {
@@ -24,7 +26,7 @@ export default{
             relations: ['images']
         });
 
-        return response.json(empreendedor);
+        return response.json(empreendedorView.render(empreendedor));
     },
 
 
